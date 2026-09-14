@@ -125,20 +125,21 @@ export function chromeOffscreenDeps(): OffscreenDeps {
   }
 
   return {
-    hasDocument: async () => {
+    hasDocument: async (): Promise<boolean> => {
       const contexts = await getContexts({
         contextTypes: ["OFFSCREEN_DOCUMENT"],
       });
       return contexts.length > 0;
     },
-    createDocument: () =>
+    createDocument: (): Promise<void> =>
       offscreen.createDocument({
         url: OFFSCREEN_DOCUMENT_PATH,
         reasons: ["BLOBS"],
         justification:
           "Create a blob object URL for the user-initiated data export download",
       }),
-    closeDocument: () => offscreen.closeDocument(),
-    sendMessage: (message) => browser.runtime.sendMessage(message),
+    closeDocument: (): Promise<void> => offscreen.closeDocument(),
+    sendMessage: (message: unknown): Promise<unknown> =>
+      browser.runtime.sendMessage(message),
   };
 }
