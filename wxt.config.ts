@@ -9,7 +9,7 @@ export default defineConfig({
     plugins: [preact()],
   }),
 
-  manifest: {
+  manifest: ({ browser }) => ({
     name: "Take5 Time Tracker",
     version: pkg.version,
     description: "Track time spent on different domains",
@@ -20,6 +20,12 @@ export default defineConfig({
       "webNavigation",
       "idle",
       "alarms",
+      // User-initiated data export (saveAs dialog + completion tracking)
+      "downloads",
+      // Chrome only: offscreen document hosts createObjectURL for the MV3
+      // service worker. Unknown to (and unneeded by) Firefox, whose
+      // background page is a document already.
+      ...(browser === "firefox" ? [] : ["offscreen"]),
     ],
     host_permissions: ["<all_urls>"],
     homepage_url: "https://github.com/JayDosunmu/take5-time-tracker",
@@ -51,5 +57,5 @@ export default defineConfig({
         },
       } as Record<string, unknown>,
     },
-  },
+  }),
 });

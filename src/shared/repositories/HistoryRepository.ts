@@ -15,6 +15,9 @@ const STORAGE_KEYS = {
   DAY_PREFIX: DAY_STORAGE_PREFIX,
 } as const;
 
+// Exposed for snapshot-style readers (export); see ExportService
+export const HISTORY_STORAGE_KEY = STORAGE_KEYS.HISTORY;
+
 export class HistoryRepository {
   private static instance: HistoryRepository | null = null;
   private storage: PersistenceManager;

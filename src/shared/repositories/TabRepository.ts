@@ -9,6 +9,9 @@ import type { PersistenceManager } from "../storage/PersistenceManager";
 
 const STORAGE_KEY = "activeTab";
 
+// Exposed for snapshot-style readers (export); see ExportService
+export const ACTIVE_TAB_STORAGE_KEY = STORAGE_KEY;
+
 export class TabRepository {
   private static instance: TabRepository | null = null;
   private storage: PersistenceManager;

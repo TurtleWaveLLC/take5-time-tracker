@@ -13,6 +13,7 @@ import {
   DomainList,
   type DomainListItem,
 } from "../../shared/components";
+import { useDataExport } from "./useDataExport";
 
 interface SessionData {
   domain: string;
@@ -153,6 +154,8 @@ export const App: FunctionComponent = () => {
     setState((prev) => ({ ...prev, showDebug: !prev.showDebug }));
   };
 
+  const dataExport = useDataExport();
+
   // Derive domain items for the DomainList
   const domainItems: DomainListItem[] = (() => {
     const domains = state.storageData?.todayData?.domains;
@@ -252,8 +255,32 @@ export const App: FunctionComponent = () => {
 
       <div class="divider" />
 
+      <section class="data-section">
+        <div class="export-anchor">
+          <button
+            class="secondary-button export-button"
+            onClick={dataExport.startExport}
+            disabled={dataExport.status === "pending"}
+          >
+            <span>
+              {dataExport.status === "success"
+                ? "Exported ✓"
+                : "Export My Data"}
+            </span>
+            {dataExport.status === "pending" && (
+              <span class="spinner" aria-hidden="true" />
+            )}
+          </button>
+          <div class="export-tooltip" role="tooltip">
+            {dataExport.status === "error"
+              ? `Export failed: ${dataExport.error}`
+              : "Downloads a JSON file with your browsing-time history and settings. Your data stays on your device."}
+          </div>
+        </div>
+      </section>
+
       <section class="debug-section">
-        <button class="debug-toggle" onClick={toggleDebug}>
+        <button class="secondary-button" onClick={toggleDebug}>
           {state.showDebug ? "Hide" : "Show"} Storage Data
         </button>
 

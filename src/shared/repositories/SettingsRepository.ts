@@ -9,6 +9,9 @@ import type { PersistenceManager } from "../storage/PersistenceManager";
 
 const STORAGE_KEY = "settings";
 
+// Exposed for snapshot-style readers (export); see ExportService
+export const SETTINGS_STORAGE_KEY = STORAGE_KEY;
+
 export class SettingsRepository {
   private static instance: SettingsRepository | null = null;
   private storage: PersistenceManager;

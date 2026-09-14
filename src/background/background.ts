@@ -19,12 +19,15 @@ import type {
 import type { DataModelManager } from "./services/DataModelManager";
 import type { TimeTracker } from "./services/TimeTracker";
 import type { SettingsRepository } from "../shared/repositories";
+import { ExportHandler } from "./services/ExportHandler";
+import { createObjectUrlPort } from "./delivery/ObjectUrlPort";
 
 export class BackgroundService {
   private static instance: BackgroundService | null = null;
   private dataModelManager: DataModelManager;
   private timeTracker: TimeTracker;
   private settingsRepository: SettingsRepository;
+  private exportHandler: ExportHandler;
   private initialized = false;
 
   private constructor(
@@ -35,6 +38,10 @@ export class BackgroundService {
     this.dataModelManager = dataModelManager;
     this.timeTracker = timeTracker;
     this.settingsRepository = settingsRepository;
+    this.exportHandler = new ExportHandler(
+      dataModelManager,
+      createObjectUrlPort,
+    );
   }
 
   public static getInstance(
@@ -131,6 +138,13 @@ export class BackgroundService {
     sendResponse: (response: MessageResponse) => void,
   ): Promise<boolean> {
     try {
+      // Messages addressed to another context (e.g. the offscreen document)
+      // are not ours to answer — responding here would race the real
+      // recipient's reply on the shared runtime bus.
+      if (message.target !== undefined && message.target !== "background") {
+        return false;
+      }
+
       console.log(
         `BackgroundService received message: ${message.type}`,
         message,
@@ -177,6 +191,10 @@ export class BackgroundService {
             message as UpdatePillHiddenMessage,
             sendResponse,
           );
+          break;
+
+        case "EXPORT_DATA":
+          sendResponse(await this.exportHandler.handleExport());
           break;
 
         default:

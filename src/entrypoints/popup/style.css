@@ -153,12 +153,7 @@ section h2 {
   border: 1px solid #e2e8f0;
 }
 
-/* Debug section */
-.debug-section {
-  margin-top: 8px;
-}
-
-.debug-toggle {
+.secondary-button {
   width: 100%;
   padding: 10px 16px;
   background: #f1f5f9;
@@ -171,12 +166,91 @@ section h2 {
   transition: background 0.2s ease;
 }
 
-.debug-toggle:hover {
+.secondary-button:hover:not(:disabled) {
   background: #e2e8f0;
 }
 
-.debug-toggle:active {
+.secondary-button:active:not(:disabled) {
   background: #cbd5e1;
+}
+
+.secondary-button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Data section (export) */
+.data-section {
+  margin-top: 8px;
+}
+
+.export-anchor {
+  position: relative;
+}
+
+/* Spinner layout on top of .secondary-button */
+.export-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(51, 65, 85, 0.3);
+  border-top-color: #334155;
+  border-radius: 50%;
+  animation: export-spin 0.8s linear infinite;
+}
+
+@keyframes export-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.export-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  padding: 8px 10px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  border-radius: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Tail pointing up at the button */
+.export-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #1e293b;
+}
+
+.export-anchor:hover .export-tooltip,
+.export-button:focus-visible + .export-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Debug section */
+.debug-section {
+  margin-top: 8px;
 }
 
 .debug-data {

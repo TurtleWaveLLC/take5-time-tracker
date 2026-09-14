@@ -175,20 +175,34 @@ export class DataModelManager {
     }
 
     try {
-      const now = Date.now();
-      const elapsed = now - this.activeTab.lastTimerCheck;
-
-      // Record time up to the hour boundary
-      await this.recordElapsedTime(elapsed, now);
-
-      // Update the timer checkpoint
-      this.activeTab.lastTimerCheck = now;
-      await this.tabRepository.setActiveTab(this.activeTab);
-
+      await this.checkpointNow();
       console.log("Hour boundary crossed, time recorded");
     } catch (error) {
       console.error("DataModelManager.handleHourElapsed error:", error);
     }
+  }
+
+  /**
+   * Checkpoint the live session into storage immediately.
+   *
+   * Folds elapsed time since the last checkpoint into today's day record so
+   * that storage reflects this exact moment. The single checkpoint
+   * implementation: hour boundaries delegate here, and export calls it so
+   * the file isn't missing un-checkpointed seconds. No-op when nothing is
+   * actively tracking.
+   */
+  async checkpointNow(): Promise<void> {
+    if (!this.activeTab || !this.activeTab.active) {
+      return;
+    }
+
+    const now = Date.now();
+    const elapsed = now - this.activeTab.lastTimerCheck;
+
+    await this.recordElapsedTime(elapsed, now);
+
+    this.activeTab.lastTimerCheck = now;
+    await this.tabRepository.setActiveTab(this.activeTab);
   }
 
   /**
